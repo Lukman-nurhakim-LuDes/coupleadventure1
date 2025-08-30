@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Couple</title>
+    <!-- Google Fonts: Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #F8F4F1;
+        }
+
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e0e0e0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a8a8a8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #818a91;
+        }
+
+        /* Hero image with gentle animation */
+        .hero-bg {
+            background-image: url('https://placehold.co/1200x800/ffecf4/000000?text=Petualangan+Couple');
+            background-size: cover;
+            background-position: center;
+            animation: moveBg 20s infinite alternate ease-in-out;
+            border-radius: 1.5rem;
+        }
+
+        @keyframes moveBg {
+            from {
+                background-position: center 0%;
+            }
+
+            to {
+                background-position: center 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#F8F4F1] min-h-screen flex flex-col items-center p-4">
+
+    <!-- Main Application Container -->
+    <div id="app" class="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[95vh] relative">
+
+        <!-- Splash Screen / Loader -->
+        <div id="loading-screen" class="absolute inset-0 bg-white flex flex-col items-center justify-center z-50 transition-opacity duration-500">
+            <svg class="animate-spin text-[#B2B5EE] h-16 w-16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-xl text-gray-600 font-semibold">Memuat...</p>
+        </div>
+
+        <!-- Header -->
+        <header id="header" class="w-full bg-[#B2B5EE] text-white p-4 flex items-center justify-between rounded-t-3xl shadow-md z-10 hidden">
+            <h1 class="text-2xl font-bold">Couple's Hub</h1>
+            <div class="flex items-center space-x-2">
+                <span id="user-display" class="text-sm font-semibold"></span>
+                <img id="avatar" class="w-10 h-10 rounded-full border-2 border-white" src="https://placehold.co/40x40/B2B5EE/ffffff?text=C" alt="Avatar">
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="content" class="flex-grow p-6 overflow-y-auto hidden">
+            <!-- Content will be rendered here based on page state -->
+        </main>
+
+        <!-- Navigation Bar -->
+        <nav id="navbar" class="w-full bg-[#B2B5EE] p-4 rounded-b-3xl shadow-2xl flex justify-around items-center z-10 hidden">
+            <button id="nav-dashboard" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125h9.75a1.125 1.125 0 001.125-1.125V9.75M8.25 21h6.5M12 3v9" />
+                </svg>
+                <span class="text-xs mt-1">Hub</span>
+            </button>
+            <button id="nav-keuangan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l-.879-.879m0 0a3 3 0 114.243 4.243m-4.243 0L10.5 16.5m-.257-4.243L11.5 12m0 0l-2.618 2.618m2.618-2.618a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879m0 0a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879-.879m-.879-.879a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879" />
+                </svg>
+                <span class="text-xs mt-1">Keuangan</span>
+            </button>
+            <button id="nav-habit" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
+                </svg>
+                <span class="text-xs mt-1">Habit</span>
+            </button>
+            <button id="nav-laporan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75M6 21h12a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25v12a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                <span class="text-xs mt-1">Laporan</span>
+            </button>
+            <button id="nav-galeri" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span class="text-xs mt-1">Galeri</span>
+            </button>
+            <button id="nav-settings" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5a.75.75 0 001.5 0V3a.75.75 0 00-1.5 0zM12 21v-1.5a.75.75 0 001.5 0V21a.75.75 0 00-1.5 0zM3 12h1.5a.75.75 0 000-1.5H3a.75.75 0 000 1.5zM21 12h-1.5a.75.75 0 000 1.5H21a.75.75 0 000-1.5zM6 15.75a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM18 15.75a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM6 8.25a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM18 8.25a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75z" />
+                </svg>
+                <span class="text-xs mt-1">Setting</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-container" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 id="modal-title" class="text-xl font-bold mb-4"></h2>
+            <p id="modal-message" class="mb-4"></p>
+            <div class="flex justify-end space-x-2">
+                <button id="modal-cancel" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">Batal</button>
+                <button id="modal-confirm" class="bg-[#B2B5EE] text-white px-4 py-2 rounded-lg hover:bg-[#979ADF] transition-colors">OK</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyA1XmP5oSUlI5ct8NNVcM5FaWlW1gk3D8A",
+          authDomain: "couple-adventure.firebaseapp.com",
+          projectId: "couple-adventure",
+          storageBucket: "couple-adventure.firebasestorage.app",
+          messagingSenderId: "960626078857",
+          appId: "1:960626078857:web:debb5a3f90ccf00119c258"
+        };
+
+
+        // --- Firebase Initialization ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- Global State Variables ---
+        let userId = null;
+        let username = null;
+        let userAvatar = null;
+        let currentPage = 'login';
+        let finances = [];
+        let habits = [];
+        let galeri = [];
+        let financeChart = null;
+        let donutChart = null;
+
+
+        // --- UI Element References ---
+        const appEl = document.getElementById('app');
+        const loadingScreen = document.getElementById('loading-screen');
+        const headerEl = document.getElementById('header');
+        const userDisplayEl = document.getElementById('user-display');
+        const userAvatarEl = document.getElementById('avatar');
+        const contentEl = document.getElementById('content');
+        const navbarEl = document.getElementById('navbar');
+        const navButtons = {
+            hub: document.getElementById('nav-dashboard'),
+            keuangan: document.getElementById('nav-keuangan'),
+            habit: document.getElementById('nav-habit'),
+            laporan: document.getElementById('nav-laporan'),
+            galeri: document.getElementById('nav-galeri'),
+            settings: document.getElementById('nav-settings')
+        };
+        const modalContainer = document.getElementById('modal-container');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const modalCancel = document.getElementById('modal-cancel');
+
+        // --- Helper Functions ---
+
+        /**
+         * Shows a custom modal dialog.
+         * @param {string} title 
+         * @param {string} message 
+         * @returns {Promise<boolean>}
+         */
+        function showModal(title, message) {
+            return new Promise(resolve => {
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modalContainer.classList.remove('hidden');
+
+                const handleConfirm = () => {
+                    modalContainer.classList.add('hidden');
+                    resolve(true);
+                };
+
+                const handleCancel = () => {
+                    modalContainer.classList.add('hidden');
+                    resolve(false);
+                };
+
+                modalConfirm.onclick = handleConfirm;
+                modalCancel.onclick = handleCancel;
+            });
+        }
+
+        /**
+         * Renders the UI based on the current page state.
+         * @param {string} pageName 
+         */
+        function renderPage(pageName) {
+            currentPage = pageName;
+            contentEl.innerHTML = '';
+            // Update active navigation button
+            Object.values(navButtons).forEach(btn => btn.classList.remove('opacity-100'));
+            const activeNavBtn = navButtons[pageName];
+            if (activeNavBtn) activeNavBtn.classList.add('opacity-100');
+
+            // Destroy charts to prevent rendering on wrong canvas
+            if (financeChart) { financeChart.destroy(); financeChart = null; }
+            if (donutChart) { donutChart.destroy(); donutChart = null; }
+
+            switch (pageName) {
+                case 'login':
+                    renderLogin();
+                    break;
+                case 'hub':
+                    renderHub();
+                    break;
+                case 'keuangan':
+                    renderKeuangan();
+                    break;
+                case 'habit':
+                    renderHabitTracker();
+                    break;
+                case 'laporan':
+                    renderLaporan();
+                    break;
+                case 'galeri':
+                    renderGaleri();
+                    break;
+                case 'settings':
+                    renderSettings();
+                    break;
+                default:
+                    renderHub();
+            }
+        }
+
+        // --- Auth & User State Management ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                
+                // Fetch user profile data
+                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile`, 'data');
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    username = userData.username || 'Pengguna';
+                    userAvatar = userData.avatar || 'https://placehold.co/40x40/B2B5EE/ffffff?text=C';
+                } else {
+                    username = 'Pengguna';
+                    userAvatar = 'https://placehold.co/40x40/B2B5EE/ffffff?text=C';
+                }
+
+                userDisplayEl.textContent = username;
+                userAvatarEl.src = userAvatar;
+                
+                headerEl.classList.remove('hidden');
+                navbarEl.classList.remove('hidden');
+                contentEl.classList.remove('hidden');
+                loadingScreen.classList.add('hidden');
+                // Start listening to data
+                listenToFinances();
+                listenToHabits();
+                listenToGaleri();
+                renderPage('hub');
+            } else {
+                userId = null;
+                headerEl.classList.add('hidden');
+                navbarEl.classList.add('hidden');
+                contentEl.classList.remove('hidden');
+                loadingScreen.classList.add('hidden');
+                renderPage('login');
+            }
+        });
+
+        // Sign in on load
+        if (initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken).catch(async (error) => {
+                console.error("Custom token sign-in failed:", error);
+                // Fallback to anonymous sign-in if custom token fails
+                await signInAnonymously(auth);
+            });
+        } else {
+            signInAnonymously(auth).catch((error) => {
+                console.error("Anonymous sign-in failed:", error);
+            });
+        }
+
+        // --- Login & Register Page ---
+        function renderLogin() {
+            contentEl.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-8 bg-[#F3F6FB] rounded-3xl h-full shadow-lg">
+                    <div class="hero-bg w-24 h-24 rounded-full mb-6"></div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Selamat Datang di Hub Couple</h2>
+                    <form id="auth-form" class="w-full space-y-4">
+                        <div>
+                            <label for="auth-email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="auth-email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#B2B5EE] focus:ring focus:ring-[#B2B5EE] focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="auth-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input type="password" id="auth-password" name="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#B2B5EE] focus:ring focus:ring-[#B2B5EE] focus:ring-opacity-50" required>
+                        </div>
+                        <button type="submit" id="login-btn" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">Masuk</button>
+                        <p class="text-center text-sm mt-4">Belum punya akun? <a href="#" id="show-register" class="text-[#B2B5EE] font-semibold hover:underline">Daftar di sini</a></p>
+                        <p class="text-xs text-gray-500 text-center">ID Pengguna: <span class="font-bold">${userId || 'Memuat...'}</span></p>
+                    </form>
+                </div>
+            `;
+
+            const authForm = document.getElementById('auth-form');
+            const showRegisterBtn = document.getElementById('show-register');
+            const loginBtn = document.getElementById('login-btn');
+
+            showRegisterBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginBtn.textContent = 'Daftar';
+                loginBtn.removeEventListener('click', handleLogin);
+                loginBtn.addEventListener('click', handleRegister);
+                showRegisterBtn.textContent = 'Masuk';
+                showRegisterBtn.removeEventListener('click', showRegister);
+                showRegisterBtn.addEventListener('click', handleShowLogin);
+            });
+
+            const handleShowLogin = (e) => {
+                e.preventDefault();
+                loginBtn.textContent = 'Masuk';
+                loginBtn.removeEventListener('click', handleRegister);
+                loginBtn.addEventListener('click', handleLogin);
+                showRegisterBtn.textContent = 'Daftar di sini';
+                showRegisterBtn.removeEventListener('click', handleShowLogin);
+                showRegisterBtn.addEventListener('click', showRegisterBtn);
+            };
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                    showModal('Gagal Masuk', 'Kredensial salah atau pengguna tidak ditemukan.');
+                }
+            };
+
+            const handleRegister = async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    showModal('Berhasil', 'Pendaftaran berhasil! Silakan masuk.');
+                } catch (error) {
+                    showModal('Gagal Daftar', 'Email sudah terdaftar atau password terlalu lemah.');
+                }
+            };
+
+            loginBtn.addEventListener('click', handleLogin);
+        }
+
+        // --- Hub Dashboard ---
+        function renderHub() {
+            // Calculate financial summary
+            const totalIncome = finances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+            const totalExpense = finances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+            const finalBalance = totalIncome - totalExpense;
+
+            let balanceMessage = "";
+            let balanceColor = "";
+            if (finalBalance > 0) {
+                balanceMessage = "Keuangan kalian stabil, lanjutkan petualangan!";
+                balanceColor = "text-green-600";
+            } else if (finalBalance < 0) {
+                balanceMessage = "Waktunya hemat, tetap semangat!";
+                balanceColor = "text-red-600";
+            } else {
+                balanceMessage = "Saldo seimbang, mari mulai petualangan baru!";
+                balanceColor = "text-gray-600";
+            }
+
+            contentEl.innerHTML = `
+                <div class="flex flex-col items-center p-4">
+                    <div class="hero-bg w-full h-48 rounded-2xl shadow-xl mb-6"></div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Selamat Datang, ${username}!</h2>
+                    <p class="text-sm text-gray-500 mb-6 text-center">Kelola petualangan couple kalian di sini.</p>
+
+                    <!-- Financial Summary on Dashboard -->
+                    <div class="bg-[#F8F4F1] p-5 rounded-2xl shadow-md w-full mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Sekilas Keuangan</h3>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Pemasukan</p>
+                                <p class="font-bold text-green-600 text-lg">Rp ${totalIncome.toLocaleString('id-ID')}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Total Pengeluaran</p>
+                                <p class="font-bold text-red-600 text-lg">Rp ${totalExpense.toLocaleString('id-ID')}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                             <p class="text-md font-semibold text-gray-600">Saldo Saat Ini:</p>
+                             <p class="text-2xl font-extrabold ${balanceColor}">Rp ${finalBalance.toLocaleString('id-ID')}</p>
+                             <p class="text-sm mt-2 font-medium ${balanceColor} animate-pulse">${balanceMessage}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts on Dashboard -->
+                    <div class="space-y-6 w-full mb-6">
+                         <div class="bg-gray-100 p-4 rounded-xl shadow-md">
+                            <h3 class="font-bold text-xl mb-2 text-center">Tren Harian</h3>
+                            <canvas id="line-chart"></canvas>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-xl shadow-md">
+                            <h3 class="font-bold text-xl mb-2 text-center">Pemasukan vs Pengeluaran</h3>
+                            <canvas id="donut-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Shortcut Buttons -->
+                    <div class="grid grid-cols-2 gap-4 w-full">
+                        <button id="shortcut-keuangan" class="bg-[#B2B5EE] text-white font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l-.879-.879m0 0a3 3 0 114.243 4.243m-4.243 0L10.5 16.5m-.257-4.243L11.5 12m0 0l-2.618 2.618m2.618-2.618a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879m0 0a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879-.879m-.879-.879a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879" />
+                            </svg>
+                            <span>Keuangan</span>
+                        </button>
+                        <button id="shortcut-habit" class="bg-[#F6C6EA] text-gray-800 font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
+                            </svg>
+                            <span>Habit Tracker</span>
+                        </button>
+                        <button id="shortcut-laporan" class="bg-[#A4EBF3] text-gray-800 font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75M6 21h12a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25v12a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                            <span>Laporan</span>
+                        </button>
+                        <button id="shortcut-galeri" class="bg-[#A4EBF3] text-gray-800 font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                            </svg>
+                            <span>Galeri</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('shortcut-keuangan').addEventListener('click', () => renderPage('keuangan'));
+            document.getElementById('shortcut-habit').addEventListener('click', () => renderPage('habit'));
+            document.getElementById('shortcut-laporan').addEventListener('click', () => renderPage('laporan'));
+            document.getElementById('shortcut-galeri').addEventListener('click', () => renderPage('galeri'));
+            
+            // Render charts on dashboard
+            renderDashboardCharts();
+        }
+        
+        function renderDashboardCharts() {
+            // Prepare data for charts
+            const dailyData = {};
+            finances.forEach(f => {
+                const date = f.date;
+                if (!dailyData[date]) dailyData[date] = { income: 0, expense: 0 };
+                if (f.category === 'pemasukan') {
+                    dailyData[date].income += f.amount;
+                } else {
+                    dailyData[date].expense += f.amount;
+                }
+            });
+
+            const dates = Object.keys(dailyData).sort();
+            const incomeData = dates.map(date => dailyData[date].income);
+            const expenseData = dates.map(date => dailyData[date].expense);
+
+            const totalIncome = finances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+            const totalExpense = finances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+
+            // Line Chart
+            const lineCtx = document.getElementById('line-chart');
+            if (lineCtx) {
+                if (financeChart) financeChart.destroy();
+                financeChart = new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Pemasukan',
+                            data: incomeData,
+                            borderColor: '#68d391', // Green
+                            tension: 0.1,
+                            fill: false
+                        }, {
+                            label: 'Pengeluaran',
+                            data: expenseData,
+                            borderColor: '#f687b3', // Pink
+                            tension: 0.1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah (Rp)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Donut Chart
+            const donutCtx = document.getElementById('donut-chart');
+            if (donutCtx) {
+                if (donutChart) donutChart.destroy();
+                donutChart = new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pemasukan', 'Pengeluaran'],
+                        datasets: [{
+                            data: [totalIncome, totalExpense],
+                            backgroundColor: ['#68d391', '#f687b3'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- Keuangan Page ---
+        function renderKeuangan() {
+            // Render the finance page UI
+            contentEl.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Keuangan Couple</h2>
+
+                    <!-- Dashboard Summary Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div class="bg-blue-100 p-4 rounded-xl shadow-md">
+                            <h3 class="font-bold text-lg text-blue-800">Saldo Akhir</h3>
+                            <p id="saldo-akhir" class="text-2xl font-extrabold text-blue-600 mt-1">Rp 0</p>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-xl shadow-md">
+                            <h3 class="font-bold text-lg text-green-800">Total Pemasukan</h3>
+                            <p id="total-pemasukan" class="text-2xl font-extrabold text-green-600 mt-1">Rp 0</p>
+                        </div>
+                        <div class="bg-red-100 p-4 rounded-xl shadow-md">
+                            <h3 class="font-bold text-lg text-red-800">Total Pengeluaran</h3>
+                            <p id="total-pengeluaran" class="text-2xl font-extrabold text-red-600 mt-1">Rp 0</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
+                    <div class="bg-[#F6C6EA] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-4 text-center">Input Transaksi Baru</h3>
+                        <form id="finance-form" class="space-y-4">
+                            <div>
+                                <label for="finance-date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                                <input type="date" id="finance-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label for="finance-category" class="block text-sm font-medium text-gray-700">Kategori</label>
+                                <select id="finance-category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="pemasukan">Pemasukan</option>
+                                    <option value="pengeluaran">Pengeluaran</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="finance-amount" class="block text-sm font-medium text-gray-700">Jumlah (Rp)</label>
+                                <input type="number" id="finance-amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label for="finance-notes" class="block text-sm font-medium text-gray-700">Catatan</label>
+                                <input type="text" id="finance-notes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <button type="submit" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">Tambah Transaksi</button>
+                        </form>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-2 text-center">Riwayat Transaksi</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left table-auto">
+                                <thead class="border-b-2 border-[#F6C6EA]">
+                                    <tr>
+                                        <th class="py-2 px-1">Tgl</th>
+                                        <th class="py-2 px-1">Kategori</th>
+                                        <th class="py-2 px-1">Jumlah</th>
+                                        <th class="py-2 px-1">Catatan</th>
+                                        <th class="py-2 px-1"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="finance-table-body">
+                                    <!-- Rows will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Add event listeners and render initial data
+            document.getElementById('finance-form').addEventListener('submit', handleAddFinance);
+            updateFinanceUI();
+        }
+
+        /**
+         * Updates the finance UI with data from state.
+         */
+        function updateFinanceUI() {
+            // Calculate totals
+            const totalIncome = finances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+            const totalExpense = finances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+            const finalBalance = totalIncome - totalExpense;
+
+            // Update summary cards
+            const saldoAkhirEl = document.getElementById('saldo-akhir');
+            const totalPemasukanEl = document.getElementById('total-pemasukan');
+            const totalPengeluaranEl = document.getElementById('total-pengeluaran');
+
+            if (saldoAkhirEl) saldoAkhirEl.textContent = `Rp ${finalBalance.toLocaleString('id-ID')}`;
+            if (totalPemasukanEl) totalPemasukanEl.textContent = `Rp ${totalIncome.toLocaleString('id-ID')}`;
+            if (totalPengeluaranEl) totalPengeluaranEl.textContent = `Rp ${totalExpense.toLocaleString('id-ID')}`;
+            
+            // Render table
+            const tableBody = document.getElementById('finance-table-body');
+            if (tableBody) {
+                tableBody.innerHTML = finances.map(item => `
+                    <tr class="border-b border-gray-100 last:border-0 text-sm">
+                        <td class="py-2 px-1">${item.date}</td>
+                        <td class="py-2 px-1">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold ${item.category === 'pemasukan' ? 'bg-[#D2F9D2] text-[#4CAF50]' : 'bg-[#F9D2D2] text-[#F44336]'}">
+                                ${item.category === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran'}
+                            </span>
+                        </td>
+                        <td class="py-2 px-1">${item.amount.toLocaleString('id-ID')}</td>
+                        <td class="py-2 px-1">${item.notes || '-'}</td>
+                        <td class="py-2 px-1 text-right">
+                            <button data-id="${item.id}" class="delete-finance-btn text-gray-500 hover:text-red-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m-3.9-3.21a.75.75 0 011.022.166m10.875 0L19.5 5.25" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                tableBody.querySelectorAll('.delete-finance-btn').forEach(button => {
+                    button.addEventListener('click', handleDeleteFinance);
+                });
+            }
+        }
+
+        async function handleAddFinance(e) {
+            e.preventDefault();
+            const form = e.target;
+            const newFinance = {
+                date: form['finance-date'].value,
+                category: form['finance-category'].value,
+                amount: parseFloat(form['finance-amount'].value),
+                notes: form['finance-notes'].value,
+                timestamp: Date.now()
+            };
+            try {
+                const financeCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/finances`);
+                await addDoc(financeCollectionRef, newFinance);
+                form.reset();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showModal('Error', 'Gagal menambahkan transaksi. Silakan coba lagi.');
+            }
+        }
+
+        async function handleDeleteFinance(e) {
+            const docId = e.target.closest('button').dataset.id;
+            const confirmed = await showModal('Hapus Transaksi', 'Apakah Anda yakin ingin menghapus transaksi ini?');
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/finances`, docId));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    showModal('Error', 'Gagal menghapus transaksi. Silakan coba lagi.');
+                }
+            }
+        }
+
+        // --- Habit Tracker Page ---
+        function renderHabitTracker() {
+            contentEl.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Habit Tracker</h2>
+                    <!-- Input Form -->
+                    <div class="bg-[#A4EBF3] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-4 text-center">Tambah Habit Baru</h3>
+                        <form id="habit-form" class="space-y-4">
+                            <div>
+                                <label for="habit-name" class="block text-sm font-medium text-gray-700">Nama Habit</label>
+                                <input type="text" id="habit-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label for="habit-user" class="block text-sm font-medium text-gray-700">Untuk Siapa?</label>
+                                <select id="habit-user" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="couple1">Couple 1</option>
+                                    <option value="couple2">Couple 2</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">Tambah Habit</button>
+                        </form>
+                    </div>
+
+                    <!-- Filter & Table -->
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <div class="mb-4 flex justify-between items-center">
+                            <h3 class="font-bold text-lg">Daftar Habit</h3>
+                            <select id="habit-filter" class="rounded-md border-gray-300">
+                                <option value="all">Semua</option>
+                                <option value="couple1">Couple 1</option>
+                                <option value="couple2">Couple 2</option>
+                            </select>
+                        </div>
+                        <div id="habit-list" class="space-y-4">
+                            <!-- Habits will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Add event listeners and update UI
+            document.getElementById('habit-form').addEventListener('submit', handleAddHabit);
+            document.getElementById('habit-filter').addEventListener('change', updateHabitUI);
+            updateHabitUI();
+        }
+
+        /**
+         * Renders the habit tracker UI.
+         */
+        function updateHabitUI() {
+            const habitListEl = document.getElementById('habit-list');
+            const filterValue = document.getElementById('habit-filter').value;
+
+            if (!habitListEl) return;
+            habitListEl.innerHTML = '';
+            const filteredHabits = habits.filter(h => filterValue === 'all' || h.user === filterValue);
+
+            if (filteredHabits.length === 0) {
+                habitListEl.innerHTML = `<p class="text-center text-gray-500">Belum ada habit ditambahkan.</p>`;
+                return;
+            }
+
+            filteredHabits.forEach(habit => {
+                const totalDays = habit.dates.length;
+                const checkedDays = habit.dates.filter(d => d.checked).length;
+                const progress = totalDays > 0 ? (checkedDays / totalDays) * 100 : 0;
+
+                const habitCard = document.createElement('div');
+                habitCard.className = 'bg-gray-50 p-4 rounded-xl shadow-inner';
+                habitCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-gray-800">${habit.name} (${habit.user === 'couple1' ? 'Couple 1' : 'Couple 2'})</h4>
+                        <button data-id="${habit.id}" class="delete-habit-btn text-gray-500 hover:text-red-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m-3.9-3.21a.75.75 0 011.022.166m10.875 0L19.5 5.25" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                        <div class="bg-green-400 h-2.5 rounded-full" style="width: ${progress}%"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 text-right">${progress.toFixed(0)}% Selesai</p>
+                    <div class="mt-2 grid grid-cols-7 gap-1 overflow-x-auto p-1 border-t border-gray-200 pt-2">
+                        ${habit.dates.map((day, index) => `
+                            <div class="flex flex-col items-center">
+                                <label class="text-xs text-gray-500 mb-1">${new Date(day.date).getDate()}</label>
+                                <input type="checkbox" data-habit-id="${habit.id}" data-date-index="${index}" ${day.checked ? 'checked' : ''} class="form-checkbox text-blue-500 rounded-full w-5 h-5" />
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                habitListEl.appendChild(habitCard);
+            });
+
+            habitListEl.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', handleCheckHabit);
+            });
+            habitListEl.querySelectorAll('.delete-habit-btn').forEach(button => {
+                button.addEventListener('click', handleDeleteHabit);
+            });
+        }
+
+        async function handleAddHabit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const habitName = form['habit-name'].value;
+            const habitUser = form['habit-user'].value;
+            const dates = [];
+            const today = new Date();
+            for (let i = 0; i < 30; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                dates.push({ date: d.toISOString().split('T')[0], checked: false });
+            }
+
+            const newHabit = {
+                name: habitName,
+                user: habitUser,
+                dates: dates
+            };
+            try {
+                const habitCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/habits`);
+                await addDoc(habitCollectionRef, newHabit);
+                form.reset();
+            } catch (error) {
+                console.error("Error adding habit: ", error);
+                showModal('Error', 'Gagal menambahkan habit. Silakan coba lagi.');
+            }
+        }
+
+        async function handleCheckHabit(e) {
+            const habitId = e.target.dataset.habitId;
+            const dateIndex = parseInt(e.target.dataset.dateIndex);
+            const isChecked = e.target.checked;
+
+            const habitToUpdate = habits.find(h => h.id === habitId);
+            if (habitToUpdate) {
+                habitToUpdate.dates[dateIndex].checked = isChecked;
+                try {
+                    const habitDocRef = doc(db, `artifacts/${appId}/users/${userId}/habits`, habitId);
+                    await updateDoc(habitDocRef, {
+                        dates: habitToUpdate.dates
+                    });
+                } catch (error) {
+                    console.error("Error updating habit: ", error);
+                    showModal('Error', 'Gagal memperbarui habit.');
+                }
+            }
+        }
+
+        async function handleDeleteHabit(e) {
+            const docId = e.target.closest('button').dataset.id;
+            const confirmed = await showModal('Hapus Habit', 'Apakah Anda yakin ingin menghapus habit ini?');
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/habits`, docId));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    showModal('Error', 'Gagal menghapus habit. Silakan coba lagi.');
+                }
+            }
+        }
+
+        // --- Laporan Page ---
+        function renderLaporan() {
+            contentEl.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Laporan Bulanan</h2>
+                    <div class="bg-[#F8F4F1] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-2 text-center">Ringkasan Keuangan Bulan Ini</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Pemasukan:</p>
+                                <p id="report-income" class="font-bold text-green-600">Rp 0</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Total Pengeluaran:</p>
+                                <p id="report-expense" class="font-bold text-red-600">Rp 0</p>
+                            </div>
+                            <div class="col-span-2">
+                                <p class="text-sm text-gray-600">Saldo Akhir:</p>
+                                <p id="report-balance" class="font-bold text-blue-600">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#F8F4F1] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-2 text-center">Laporan Habit Bulan Ini</h3>
+                        <ul id="habit-report-list" class="space-y-2">
+                            <!-- Habit report items will be rendered here -->
+                        </ul>
+                    </div>
+                    <div class="flex justify-center">
+                        <button id="export-pdf-btn" class="bg-[#F6C6EA] text-gray-800 font-bold py-2 px-6 rounded-full hover:bg-[#F3B7D7] transition-colors transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 inline mr-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.25a.75.75 0 00-.75-.75H4.5a.75.75 0 00-.75.75v2.25m15.75 0c0 .414-.336.75-.75.75H3.75a.75.75 0 01-.75-.75m16.5-7.5V7.5a.75.75 0 00-.75-.75h-15a.75.75 0 00-.75.75v4.5m16.5-7.5V7.5a.75.75 0 00-.75-.75h-15a.75.75 0 00-.75.75v4.5M12 18.75h-.008v-.008H12v.008z" />
+                            </svg>
+                            Ekspor ke PDF
+                        </button>
+                    </div>
+                </div>
+            `;
+            updateLaporanUI();
+            document.getElementById('export-pdf-btn').addEventListener('click', exportPdf);
+        }
+
+        function updateLaporanUI() {
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).getTime();
+
+            // Financial Report Data
+            const monthlyFinances = finances.filter(f => {
+                const fDate = new Date(f.date).getTime();
+                return fDate >= startOfMonth && fDate <= endOfMonth;
+            });
+
+            const totalIncome = monthlyFinances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+            const totalExpense = monthlyFinances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+            const finalBalance = totalIncome - totalExpense;
+
+            document.getElementById('report-income').textContent = `Rp ${totalIncome.toLocaleString('id-ID')}`;
+            document.getElementById('report-expense').textContent = `Rp ${totalExpense.toLocaleString('id-ID')}`;
+            document.getElementById('report-balance').textContent = `Rp ${finalBalance.toLocaleString('id-ID')}`;
+
+            // Habit Report Data
+            const habitReportList = document.getElementById('habit-report-list');
+            if (habitReportList) {
+                habitReportList.innerHTML = '';
+                if (habits.length === 0) {
+                    habitReportList.innerHTML = `<li class="text-center text-gray-500">Belum ada habit ditambahkan.</li>`;
+                } else {
+                    habits.forEach(habit => {
+                        const monthlyDates = habit.dates.filter(d => {
+                            const dDate = new Date(d.date);
+                            return dDate.getMonth() === now.getMonth() && dDate.getFullYear() === now.getFullYear();
+                        });
+                        const totalDays = monthlyDates.length;
+                        const checkedDays = monthlyDates.filter(d => d.checked).length;
+                        const progress = totalDays > 0 ? (checkedDays / totalDays) * 100 : 0;
+                        
+                        const listItem = document.createElement('li');
+                        listItem.className = "flex justify-between items-center text-gray-700";
+                        listItem.innerHTML = `
+                            <span>${habit.name} (${habit.user === 'couple1' ? 'Couple 1' : 'Couple 2'})</span>
+                            <span class="font-bold text-md">${progress.toFixed(0)}%</span>
+                        `;
+                        habitReportList.appendChild(listItem);
+                    });
+                }
+            }
+        }
+
+        async function exportPdf() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const now = new Date();
+            const month = now.toLocaleString('id-ID', { month: 'long' });
+            const year = now.getFullYear();
+
+            // Financial Report Data
+            const totalIncome = finances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+            const totalExpense = finances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+            const finalBalance = totalIncome - totalExpense;
+
+            // Habit Report Data
+            const habitData = habits.map(habit => {
+                const monthlyDates = habit.dates.filter(d => {
+                    const dDate = new Date(d.date);
+                    return dDate.getMonth() === now.getMonth() && dDate.getFullYear() === now.getFullYear();
+                });
+                const totalDays = monthlyDates.length;
+                const checkedDays = monthlyDates.filter(d => d.checked).length;
+                const progress = totalDays > 0 ? (checkedDays / totalDays) * 100 : 0;
+                return [habit.name, habit.user === 'couple1' ? 'Couple 1' : 'Couple 2', `${progress.toFixed(0)}%`];
+            });
+
+            // --- PDF Content Generation ---
+            doc.setFontSize(22);
+            doc.text(`Laporan Bulanan Couple`, 105, 20, null, null, 'center');
+            doc.setFontSize(16);
+            doc.text(`Periode: ${month} ${year}`, 105, 30, null, null, 'center');
+
+            let yPos = 50;
+            doc.setFontSize(14);
+            doc.text(`Ringkasan Keuangan`, 20, yPos);
+            yPos += 10;
+            doc.setFontSize(12);
+            doc.text(`Total Pemasukan: Rp ${totalIncome.toLocaleString('id-ID')}`, 20, yPos);
+            yPos += 7;
+            doc.text(`Total Pengeluaran: Rp ${totalExpense.toLocaleString('id-ID')}`, 20, yPos);
+            yPos += 7;
+            doc.text(`Saldo Akhir: Rp ${finalBalance.toLocaleString('id-ID')}`, 20, yPos);
+
+            yPos += 15;
+            doc.setFontSize(14);
+            doc.text(`Laporan Habit`, 20, yPos);
+            yPos += 5;
+
+            doc.autoTable({
+                startY: yPos,
+                head: [['Nama Habit', 'Untuk', 'Pencapaian']],
+                body: habitData,
+                theme: 'striped',
+                headStyles: { fillColor: [178, 181, 238] }
+            });
+
+            yPos = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(14);
+            doc.text(`Detail Transaksi Keuangan`, 20, yPos);
+            yPos += 5;
+
+            const financeTableRows = finances.map(f => [
+                f.date,
+                f.category === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran',
+                `Rp ${f.amount.toLocaleString('id-ID')}`,
+                f.notes
+            ]);
+
+            doc.autoTable({
+                startY: yPos,
+                head: [['Tanggal', 'Kategori', 'Jumlah', 'Catatan']],
+                body: financeTableRows,
+                theme: 'striped',
+                headStyles: { fillColor: [178, 181, 238] }
+            });
+
+            doc.save(`Laporan_Couple_${month}_${year}.pdf`);
+            showModal('Berhasil', 'Laporan PDF telah dibuat!');
+        }
+
+        // --- Gallery Page ---
+        function renderGaleri() {
+            contentEl.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Galeri Kenangan</h2>
+                    <!-- Input Form -->
+                    <div class="bg-[#A4EBF3] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-4 text-center">Tambah Foto Polaroid Baru</h3>
+                        <form id="galeri-form" class="space-y-4">
+                            <div>
+                                <label for="galeri-file" class="block text-sm font-medium text-gray-700">Unggah Gambar</label>
+                                <input type="file" id="galeri-file" accept="image/*" required class="mt-1 block w-full text-gray-700">
+                            </div>
+                            <div>
+                                <label for="galeri-caption" class="block text-sm font-medium text-gray-700">Keterangan</label>
+                                <input type="text" id="galeri-caption" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <button type="submit" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">Tambah Foto</button>
+                        </form>
+                    </div>
+
+                    <!-- Gallery Display -->
+                    <div id="polaroid-gallery" class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <!-- Polaroid cards will be rendered here -->
+                    </div>
+                </div>
+            `;
+            document.getElementById('galeri-form').addEventListener('submit', handleAddGaleri);
+            updateGaleriUI();
+        }
+
+        function updateGaleriUI() {
+            const galleryEl = document.getElementById('polaroid-gallery');
+            if (!galleryEl) return;
+            galleryEl.innerHTML = galeri.map(item => {
+                const rotateDeg = (Math.random() - 0.5) * 10; // Random rotation between -5 and 5 degrees
+                return `
+                    <div class="bg-white p-4 pb-12 rounded-lg shadow-lg relative transform transition-transform hover:scale-105" style="transform: rotate(${rotateDeg}deg);">
+                        <img src="${item.url}" alt="${item.caption}" class="w-full rounded-lg mb-4 aspect-square object-cover">
+                        <p class="text-center font-semibold text-gray-800 absolute bottom-4 left-0 w-full">${item.caption}</p>
+                        <button data-id="${item.id}" class="delete-galeri-btn absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m-3.9-3.21a.75.75 0 011.022.166m10.875 0L19.5 5.25" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            galleryEl.querySelectorAll('.delete-galeri-btn').forEach(button => {
+                button.addEventListener('click', handleDeleteGaleri);
+            });
+        }
+        
+        function handleAddGaleri(e) {
+            e.preventDefault();
+            const form = e.target;
+            const file = form['galeri-file'].files[0];
+            const caption = form['galeri-caption'].value;
+
+            if (!file) {
+                showModal('Error', 'Silakan pilih file gambar.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                const newPhoto = {
+                    url: base64Image,
+                    caption: caption,
+                    timestamp: Date.now()
+                };
+                try {
+                    const galeriCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/galeri`);
+                    await addDoc(galeriCollectionRef, newPhoto);
+                    form.reset();
+                } catch (error) {
+                    console.error("Error adding photo: ", error);
+                    showModal('Error', 'Gagal menambahkan foto. Silakan coba lagi.');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleDeleteGaleri(e) {
+            const docId = e.target.closest('button').dataset.id;
+            const confirmed = await showModal('Hapus Foto', 'Apakah Anda yakin ingin menghapus foto ini?');
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/galeri`, docId));
+                } catch (error) {
+                    console.error("Error deleting photo: ", error);
+                    showModal('Error', 'Gagal menghapus foto. Silakan coba lagi.');
+                }
+            }
+        }
+
+        // --- Settings Page ---
+        function renderSettings() {
+            contentEl.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Pengaturan Couple</h2>
+                    <div class="bg-[#F8F4F1] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-2">Profil Pengguna</h3>
+                        <p class="text-gray-700">ID Pengguna: <span class="font-bold">${userId}</span></p>
+                        <form id="profile-form" class="space-y-4 mt-4">
+                            <div>
+                                <label for="profile-name" class="block text-sm font-medium text-gray-700">Nama Pengguna</label>
+                                <input type="text" id="profile-name" value="${username}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Foto Profil</label>
+                                <div class="flex items-center space-x-4">
+                                    <img id="profile-avatar-preview" class="w-20 h-20 rounded-full border-2 border-[#B2B5EE]" src="${userAvatar}" alt="Profile Avatar">
+                                    <input type="file" id="profile-avatar-file" accept="image/*" class="text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#B2B5EE] file:text-white hover:file:bg-[#979ADF]">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">Simpan Profil</button>
+                        </form>
+                    </div>
+                    <div class="bg-[#F8F4F1] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-2">Aksi Cepat</h3>
+                        <button id="logout-btn" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">
+                            Keluar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            document.getElementById('profile-form').addEventListener('submit', handleSaveProfile);
+            document.getElementById('profile-avatar-file').addEventListener('change', handleAvatarChange);
+        }
+        
+        function handleAvatarChange(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function handleSaveProfile(e) {
+            e.preventDefault();
+            const newUsername = document.getElementById('profile-name').value;
+            const newAvatarFile = document.getElementById('profile-avatar-file').files[0];
+            
+            let newAvatarUrl = userAvatar;
+            
+            if (newAvatarFile) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    newAvatarUrl = e.target.result;
+                    await updateProfileInFirestore(newUsername, newAvatarUrl);
+                };
+                reader.readAsDataURL(newAvatarFile);
+            } else {
+                await updateProfileInFirestore(newUsername, newAvatarUrl);
+            }
+        }
+        
+        async function updateProfileInFirestore(newUsername, newAvatarUrl) {
+            try {
+                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile`, 'data');
+                await setDoc(userDocRef, {
+                    username: newUsername,
+                    avatar: newAvatarUrl
+                });
+                username = newUsername;
+                userAvatar = newAvatarUrl;
+                userDisplayEl.textContent = username;
+                userAvatarEl.src = userAvatar;
+                showModal('Berhasil', 'Profil berhasil diperbarui!');
+            } catch (error) {
+                console.error("Error updating profile: ", error);
+                showModal('Error', 'Gagal memperbarui profil. Silakan coba lagi.');
+            }
+        }
+
+
+        async function handleLogout() {
+            const confirmed = await showModal('Keluar', 'Apakah Anda yakin ingin keluar?');
+            if (confirmed) {
+                try {
+                    await auth.signOut();
+                } catch (error) {
+                    console.error("Error signing out: ", error);
+                    showModal('Error', 'Gagal keluar. Silakan coba lagi.');
+                }
+            }
+        }
+
+        // --- Firebase Listeners ---
+        function listenToFinances() {
+            if (!userId) return;
+            const financeCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/finances`);
+            onSnapshot(financeCollectionRef, (snapshot) => {
+                finances = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                finances.sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+                if (currentPage === 'keuangan') {
+                    updateFinanceUI();
+                } else if (currentPage === 'hub') {
+                    // Re-render hub to update financial summary
+                    renderHub(); 
+                }
+                if (currentPage === 'laporan') {
+                    updateLaporanUI();
+                }
+            }, (error) => {
+                console.error("Error listening to finances: ", error);
+            });
+        }
+
+        function listenToHabits() {
+            if (!userId) return;
+            const habitCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/habits`);
+            onSnapshot(habitCollectionRef, (snapshot) => {
+                habits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (currentPage === 'habit') {
+                    updateHabitUI();
+                }
+                if (currentPage === 'laporan') {
+                    updateLaporanUI();
+                }
+            }, (error) => {
+                console.error("Error listening to habits: ", error);
+            });
+        }
+
+        function listenToGaleri() {
+            if (!userId) return;
+            const galeriCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/galeri`);
+            onSnapshot(galeriCollectionRef, (snapshot) => {
+                galeri = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                galeri.sort((a, b) => b.timestamp - a.timestamp);
+                if (currentPage === 'galeri') {
+                    updateGaleriUI();
+                }
+            }, (error) => {
+                console.error("Error listening to galeri: ", error);
+            });
+        }
+
+        // --- Navigation Event Listeners ---
+        navButtons.hub.addEventListener('click', () => renderPage('hub'));
+        navButtons.keuangan.addEventListener('click', () => renderPage('keuangan'));
+        navButtons.habit.addEventListener('click', () => renderPage('habit'));
+        navButtons.laporan.addEventListener('click', () => renderPage('laporan'));
+        navButtons.galeri.addEventListener('click', () => renderPage('galeri'));
+        navButtons.settings.addEventListener('click', () => renderPage('settings'));
+
+        // Register service worker if supported
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
