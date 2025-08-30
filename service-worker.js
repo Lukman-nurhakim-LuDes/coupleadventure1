@@ -17,11 +17,8 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Cache terbuka');
+        console.log('Opened cache');
         return cache.addAll(urlsToCache);
-      })
-      .catch(error => {
-        console.error('Gagal menambahkan aset ke cache:', error);
       })
   );
 });
@@ -52,4 +49,3 @@ self.addEventListener('activate', event => {
         })
     );
 });
-
