@@ -1,11 +1,11 @@
 {
-  "name": "Petualangan Couple",
-  "short_name": "Couple App",
-  "start_url": "./",
+  "name": "Couple Adventure",
+  "short_name": "CoupleApp",
+  "description": "Aplikasi PWA untuk petualangan couple",
+  "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#ffc1e3",
-  "theme_color": "#ff87b3",
-  "description": "Aplikasi keuangan dan habit tracker untuk couple.",
+  "background_color": "#F0F0E0",
+  "theme_color": "#FFB6C1",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -17,5 +17,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "orientation": "portrait"
 }
