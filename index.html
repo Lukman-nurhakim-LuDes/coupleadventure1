@@ -44,7 +44,7 @@
         /* Hero image with gentle animation */
         .hero-bg {
             /* Menggunakan gambar dari repositori GitHub Anda */
-            background-image: url('https://raw.githubusercontent.com/Lukman-nurhakim-LuDes/coupleadventure/main/icons/background.png');
+            background-image: url('./icons/background.png');
             background-size: cover;
             background-position: center;
             animation: moveBg 20s infinite alternate ease-in-out;
@@ -105,6 +105,12 @@
                 </svg>
                 <span class="text-xs mt-1">Keuangan</span>
             </button>
+            <button id="nav-tabungan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.007 60.007 0 0115.795-3.007 60.007 60.007 0 014.132 2.503m-16.5-6v-2.25A2.25 2.25 0 016.924 9.497l1.056-.492a2.25 2.25 0 001.274-2.247m-1.274 2.247L5.541 11.25m3.654 1.253a.75.75 0 00.725-.494l.519-1.038a.75.75 0 00-.725-1.066l-2.022.494a.75.75 0 00-.519 1.066l.519 1.038a.75.75 0 00.725.494zM5.541 11.25H2.25M2.25 18.75V11.25m4.291-7.003L16.208 2.25" />
+                </svg>
+                <span class="text-xs mt-1">Tabungan</span>
+            </button>
             <button id="nav-habit" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
@@ -153,7 +159,6 @@
 
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -179,6 +184,7 @@
         let finances = [];
         let habits = [];
         let galeri = [];
+        let savings = [];
         let financeChart = null;
         let donutChart = null;
 
@@ -194,6 +200,7 @@
         const navButtons = {
             hub: document.getElementById('nav-dashboard'),
             keuangan: document.getElementById('nav-keuangan'),
+            tabungan: document.getElementById('nav-tabungan'),
             habit: document.getElementById('nav-habit'),
             laporan: document.getElementById('nav-laporan'),
             galeri: document.getElementById('nav-galeri'),
@@ -260,6 +267,9 @@
                 case 'keuangan':
                     renderKeuangan();
                     break;
+                case 'tabungan':
+                    renderTabungan();
+                    break;
                 case 'habit':
                     renderHabitTracker();
                     break;
@@ -307,6 +317,7 @@
                 listenToFinances();
                 listenToHabits();
                 listenToGaleri();
+                listenToSavings();
                 renderPage('hub');
             } else {
                 userId = null;
@@ -418,7 +429,7 @@
 
             contentEl.innerHTML = `
                 <div class="flex flex-col items-center p-4">
-                    <div class="hero-bg w-full h-48 rounded-2xl shadow-xl mb-6"></div>
+                    <div id="hero-image-container" class="hero-bg w-full h-48 rounded-2xl shadow-xl mb-6 hidden"></div>
                     <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Selamat Datang, ${username}!</h2>
                     <p class="text-sm text-gray-500 mb-6 text-center">Kelola petualangan couple kalian di sini.</p>
 
@@ -462,6 +473,12 @@
                             </svg>
                             <span>Keuangan</span>
                         </button>
+                        <button id="shortcut-tabungan" class="bg-[#A4EBF3] text-gray-800 font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.007 60.007 0 0115.795-3.007 60.007 60.007 0 014.132 2.503m-16.5-6v-2.25A2.25 2.25 0 016.924 9.497l1.056-.492a2.25 2.25 0 001.274-2.247m-1.274 2.247L5.541 11.25m3.654 1.253a.75.75 0 00.725-.494l.519-1.038a.75.75 0 00-.725-1.066l-2.022.494a.75.75 0 00-.519 1.066l.519 1.038a.75.75 0 00.725.494zM5.541 11.25H2.25M2.25 18.75V11.25m4.291-7.003L16.208 2.25" />
+                            </svg>
+                            <span>Tabungan</span>
+                        </button>
                         <button id="shortcut-habit" class="bg-[#F6C6EA] text-gray-800 font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
@@ -484,9 +501,29 @@
                 </div>
             `;
             document.getElementById('shortcut-keuangan').addEventListener('click', () => renderPage('keuangan'));
+            document.getElementById('shortcut-tabungan').addEventListener('click', () => renderPage('tabungan'));
             document.getElementById('shortcut-habit').addEventListener('click', () => renderPage('habit'));
             document.getElementById('shortcut-laporan').addEventListener('click', () => renderPage('laporan'));
             document.getElementById('shortcut-galeri').addEventListener('click', () => renderPage('galeri'));
+            
+            const heroImageContainer = document.getElementById('hero-image-container');
+            if (heroImageContainer) {
+                const img = new Image();
+                img.onload = () => {
+                    heroImageContainer.classList.remove('hidden');
+                };
+                img.onerror = () => {
+                    heroImageContainer.classList.add('hidden');
+                };
+                // Set the src from the CSS to trigger the load/error events
+                const backgroundImage = window.getComputedStyle(heroImageContainer).backgroundImage;
+                if (backgroundImage && backgroundImage !== 'none') {
+                    const urlMatch = backgroundImage.match(/url\(['"]?([^'"]+)['"]?\)/);
+                    if (urlMatch && urlMatch[1]) {
+                        img.src = urlMatch[1];
+                    }
+                }
+            }
             
             // Render charts on dashboard
             renderDashboardCharts();
@@ -736,6 +773,154 @@
             }
         }
 
+        // --- Savings Page ---
+        function renderTabungan() {
+            contentEl.innerHTML = `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Tabungan Couple</h2>
+
+                    <!-- Input Form -->
+                    <div class="bg-[#A4EBF3] p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-4 text-center">Tambah Tabungan</h3>
+                        <form id="savings-form" class="space-y-4">
+                            <div>
+                                <label for="saving-name" class="block text-sm font-medium text-gray-700">Nama Tabungan</label>
+                                <input type="text" id="saving-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label for="saving-target" class="block text-sm font-medium text-gray-700">Jumlah Target (Rp)</label>
+                                <input type="number" id="saving-target" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                             <div>
+                                <label for="saving-date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                                <input type="date" id="saving-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            </div>
+                             <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="add-to-target-checkbox" class="form-checkbox text-blue-500 rounded">
+                                <label for="add-to-target-checkbox" class="text-sm font-medium text-gray-700">Tambahkan ke tabungan yang sudah ada</label>
+                            </div>
+                            <button type="submit" class="w-full bg-[#B2B5EE] text-white font-bold py-2 px-4 rounded-full hover:bg-[#979ADF] transition-colors transform hover:scale-105">Tambah</button>
+                        </form>
+                    </div>
+
+                    <!-- Savings List -->
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <h3 class="font-bold text-lg mb-2 text-center">Daftar Tabungan</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left table-auto">
+                                <thead class="border-b-2 border-[#A4EBF3]">
+                                    <tr>
+                                        <th class="py-2 px-1">Nama</th>
+                                        <th class="py-2 px-1">Target</th>
+                                        <th class="py-2 px-1">Terkumpul</th>
+                                        <th class="py-2 px-1">Progress</th>
+                                        <th class="py-2 px-1"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="savings-table-body">
+                                    <!-- Rows will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('savings-form').addEventListener('submit', handleAddSavings);
+            updateSavingsUI();
+        }
+
+        function updateSavingsUI() {
+            const savingsTableBody = document.getElementById('savings-table-body');
+            if (!savingsTableBody) return;
+            
+            savingsTableBody.innerHTML = savings.map(goal => {
+                const progress = (goal.current / goal.target) * 100;
+                return `
+                    <tr class="border-b border-gray-100 last:border-0 text-sm">
+                        <td class="py-2 px-1">${goal.name}</td>
+                        <td class="py-2 px-1">Rp ${goal.target.toLocaleString('id-ID')}</td>
+                        <td class="py-2 px-1">Rp ${goal.current.toLocaleString('id-ID')}</td>
+                        <td class="py-2 px-1">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-green-400 h-2.5 rounded-full" style="width: ${progress}%"></div>
+                            </div>
+                            <span class="text-xs text-gray-600">${progress.toFixed(0)}%</span>
+                        </td>
+                        <td class="py-2 px-1 text-right">
+                            <button data-id="${goal.id}" class="delete-savings-btn text-gray-500 hover:text-red-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.137H8.932a2.25 2.25 0 01-2.244-2.137L4.74 6.75m-3.9-3.21a.75.75 0 011.022.166m10.875 0L19.5 5.25" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            savingsTableBody.querySelectorAll('.delete-savings-btn').forEach(button => {
+                button.addEventListener('click', handleDeleteSavings);
+            });
+        }
+
+        async function handleAddSavings(e) {
+            e.preventDefault();
+            const form = e.target;
+            const savingName = form['saving-name'].value;
+            const savingTarget = parseFloat(form['saving-target'].value);
+            const savingDate = form['saving-date'].value;
+            const addToTarget = form['add-to-target-checkbox'].checked;
+            
+            if (addToTarget) {
+                 const matchingGoal = savings.find(s => s.name === savingName);
+                 if (matchingGoal) {
+                    const newCurrent = matchingGoal.current + savingTarget;
+                     try {
+                        const savingsDocRef = doc(db, `artifacts/${appId}/users/${userId}/savings`, matchingGoal.id);
+                        await updateDoc(savingsDocRef, {
+                            current: newCurrent
+                        });
+                        showModal('Berhasil', `Rp ${savingTarget.toLocaleString('id-ID')} telah ditambahkan ke ${savingName}!`);
+                        form.reset();
+                    } catch (error) {
+                        console.error("Error updating savings goal: ", error);
+                        showModal('Error', 'Gagal memperbarui tabungan. Silakan coba lagi.');
+                    }
+                 } else {
+                     showModal('Peringatan', 'Tidak ada target tabungan dengan nama tersebut.');
+                 }
+            } else {
+                const newSavings = {
+                    name: savingName,
+                    target: savingTarget,
+                    current: 0,
+                    date: savingDate,
+                    timestamp: Date.now()
+                };
+                try {
+                    const savingsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/savings`);
+                    await addDoc(savingsCollectionRef, newSavings);
+                    form.reset();
+                    showModal('Berhasil', 'Target tabungan baru berhasil ditambahkan!');
+                } catch (error) {
+                    console.error("Error adding savings goal: ", error);
+                    showModal('Error', 'Gagal menambahkan target tabungan. Silakan coba lagi.');
+                }
+            }
+        }
+        
+        async function handleDeleteSavings(e) {
+            const docId = e.target.closest('button').dataset.id;
+            const confirmed = await showModal('Hapus Target', 'Apakah Anda yakin ingin menghapus target tabungan ini?');
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/savings`, docId));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    showModal('Error', 'Gagal menghapus target. Silakan coba lagi.');
+                }
+            }
+        }
+        
         // --- Habit Tracker Page ---
         function renderHabitTracker() {
             contentEl.innerHTML = `
@@ -1283,6 +1468,19 @@
             });
         }
 
+        function listenToSavings() {
+            if (!userId) return;
+            const savingsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/savings`);
+            onSnapshot(savingsCollectionRef, (snapshot) => {
+                savings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (currentPage === 'tabungan') {
+                    updateSavingsUI();
+                }
+            }, (error) => {
+                console.error("Error listening to savings: ", error);
+            });
+        }
+
         function listenToHabits() {
             if (!userId) return;
             const habitCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/habits`);
@@ -1316,6 +1514,7 @@
         // --- Navigation Event Listeners ---
         navButtons.hub.addEventListener('click', () => renderPage('hub'));
         navButtons.keuangan.addEventListener('click', () => renderPage('keuangan'));
+        navButtons.tabungan.addEventListener('click', () => renderPage('tabungan'));
         navButtons.habit.addEventListener('click', () => renderPage('habit'));
         navButtons.laporan.addEventListener('click', () => renderPage('laporan'));
         navButtons.galeri.addEventListener('click', () => renderPage('galeri'));
