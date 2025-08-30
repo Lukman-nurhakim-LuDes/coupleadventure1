@@ -148,7 +148,7 @@
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global variables provided by the environment
@@ -279,6 +279,7 @@
 
         // --- Auth & User State Management ---
         onAuthStateChanged(auth, async (user) => {
+            console.log("Firebase Auth State Changed:", user ? "Signed in" : "Signed out");
             if (user) {
                 userId = user.uid;
                 
@@ -317,18 +318,11 @@
             }
         });
 
-        // Sign in on load
-        if (initialAuthToken) {
-            signInWithCustomToken(auth, initialAuthToken).catch(async (error) => {
-                console.error("Custom token sign-in failed:", error);
-                // Fallback to anonymous sign-in if custom token fails
-                await signInAnonymously(auth);
-            });
-        } else {
-            signInAnonymously(auth).catch((error) => {
-                console.error("Anonymous sign-in failed:", error);
-            });
-        }
+        // Sign in on load, using a robust method for the environment
+        signInAnonymously(auth).catch((error) => {
+            console.error("Anonymous sign-in failed:", error);
+            showModal('Error Otentikasi', 'Gagal terhubung dengan database. Pastikan otentikasi Anonim diaktifkan di konsol Firebase Anda.');
+        });
 
         // --- Login & Register Page ---
         function renderLogin() {
@@ -1330,7 +1324,7 @@
         // Register service worker if supported
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js').then(registration => {
+                navigator.serviceWorker.register('./service-worker.js').then(registration => {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                 }, err => {
                     console.log('ServiceWorker registration failed: ', err);
