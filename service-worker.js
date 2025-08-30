@@ -1,11 +1,16 @@
 const CACHE_NAME = 'couple-adventure-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/background.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/background.png',
+  'https://cdn.tailwindcss.com',
+  'https://cdn.jsdelivr.net/npm/chart.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js',
+  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap'
 ];
 
 self.addEventListener('install', event => {
@@ -14,6 +19,9 @@ self.addEventListener('install', event => {
       .then(cache => {
         console.log('Cache terbuka');
         return cache.addAll(urlsToCache);
+      })
+      .catch(error => {
+        console.error('Gagal menambahkan aset ke cache:', error);
       })
   );
 });
@@ -29,3 +37,19 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+self.addEventListener('activate', event => {
+    const cacheWhitelist = [CACHE_NAME];
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+});
+
