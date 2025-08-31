@@ -24,50 +24,69 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
-            /* Menggunakan gambar dari folder icons Anda untuk seluruh body */
             background-image: url('./icons/background.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-attachment: fixed; /* Opsi untuk membuat latar belakang tetap saat digulir */
-            background-color: #F8F4F1; /* Fallback color */
+            background-attachment: fixed;
+            background-color: #F8F4F1;
         }
-        /* Mengatur latar belakang elemen utama menjadi transparan dan menambahkan efek blur untuk keterbacaan */
+
         #app {
-            background-color: rgba(255, 255, 255, 0.7); /* Latar belakang putih semi-transparan */
-            backdrop-filter: blur(8px); /* Efek blur pada konten di belakangnya */
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            width: 100%;
+            max-width: 512px;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            margin: 1rem auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 2rem);
         }
-        /* Memperbaiki header agar tetap di posisi paling atas */
+
         #header {
             position: fixed;
-            top: 0;
+            top: 1rem;
             left: 50%;
             transform: translateX(-50%);
-            max-width: 512px; /* max-w-lg in tailwind */
-            width: 100%;
+            max-width: 512px;
+            width: calc(100% - 2rem);
             z-index: 20;
             border-radius: 1.5rem 1.5rem 0 0;
+            background-color: #B2B5EE;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        /* Memperbaiki navbar agar tetap di posisi paling bawah */
         #navbar {
             position: fixed;
-            bottom: 0;
+            bottom: 1rem;
             left: 50%;
             transform: translateX(-50%);
-            max-width: 512px; /* max-w-lg in tailwind */
-            width: 100%;
+            max-width: 512px;
+            width: calc(100% - 2rem);
             z-index: 20;
             border-radius: 0 0 1.5rem 1.5rem;
+            background-color: #B2B5EE;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
-
-        /* Menyesuaikan padding pada konten utama agar tidak tertutup oleh header dan navbar */
+        
         #content {
-            padding-top: 80px; /* Sesuaikan dengan tinggi header */
-            padding-bottom: 80px; /* Sesuaikan dengan tinggi navbar */
+            flex-grow: 1;
+            padding: 1rem;
+            margin-top: 64px; /* Tinggi header */
+            margin-bottom: 64px; /* Tinggi navbar */
+            overflow-y: auto;
         }
 
-        /* Custom scrollbar for tables */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -85,18 +104,6 @@
             background: #818a91;
         }
 
-        /* Hero image with gentle animation */
-        /* Kelas ini dihapus karena latar belakang sekarang diatur di body */
-        /* @keyframes moveBg {
-            from {
-                background-position: center 0%;
-            }
-
-            to {
-                background-position: center 100%;
-            }
-        } */
-
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -106,33 +113,27 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
-        /* Responsive navigation */
-        @media (max-width: 640px) {
-            #navbar {
-                bottom: 0;
-                left: 0;
-                right: 0;
-                transform: none;
-                max-width: 100%;
-                border-radius: 0;
-            }
-        }
     </style>
 </head>
 
-<body class="bg-[#F8F4F1] min-h-screen flex flex-col items-center p-4">
+<body class="bg-[#F8F4F1] min-h-screen">
+
+    <!-- Header -->
+    <header id="header" class="hidden">
+        <h1 class="text-2xl font-bold">Couple's Hub</h1>
+        <div class="flex items-center space-x-2">
+            <span id="user-display" class="text-sm font-semibold"></span>
+            <img id="avatar" class="w-10 h-10 rounded-full border-2 border-white" src="https://placehold.co/40x40/B2B5EE/ffffff?text=C" alt="Avatar">
+        </div>
+    </header>
 
     <!-- Main Application Container -->
-    <div id="app" class="w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[95vh] relative">
-
-        <!-- Splash Screen / Loader -->
+    <div id="app" class="relative">
         <div id="loading-screen" class="absolute inset-0 bg-white flex flex-col items-center justify-center z-50 transition-opacity duration-500">
             <svg class="animate-spin text-[#B2B5EE] h-16 w-16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -141,66 +142,56 @@
             <p class="mt-4 text-xl text-gray-600 font-semibold">Memuat...</p>
         </div>
 
-        <!-- Header -->
-        <header id="header" class="w-full bg-[#B2B5EE] text-white p-4 flex items-center justify-between rounded-t-3xl shadow-md z-10 hidden">
-            <h1 class="text-2xl font-bold">Couple's Hub</h1>
-            <div class="flex items-center space-x-2">
-                <span id="user-display" class="text-sm font-semibold"></span>
-                <img id="avatar" class="w-10 h-10 rounded-full border-2 border-white" src="https://placehold.co/40x40/B2B5EE/ffffff?text=C" alt="Avatar">
-            </div>
-        </header>
-
         <!-- Main Content Area -->
-        <main id="content" class="flex-grow p-6 overflow-y-auto hidden">
-            <!-- Content will be rendered here based on page state -->
+        <main id="content" class="hidden">
         </main>
-
-        <!-- Navigation Bar -->
-        <nav id="navbar" class="w-full bg-[#B2B5EE] p-4 rounded-b-3xl shadow-2xl flex justify-around items-center z-20 fixed bottom-0 left-1/2 transform -translate-x-1/2 max-w-lg">
-            <button id="nav-dashboard" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125h9.75a1.125 1.125 0 001.125-1.125V9.75M8.25 21h6.5M12 3v9" />
-                </svg>
-                <span class="text-xs mt-1">Hub</span>
-            </button>
-            <button id="nav-keuangan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l-.879-.879m0 0a3 3 0 114.243 4.243m-4.243 0L10.5 16.5m-.257-4.243L11.5 12m0 0l-2.618 2.618m2.618-2.618a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879m0 0a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879-.879m-.879-.879a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879" />
-                </svg>
-                <span class="text-xs mt-1">Keuangan</span>
-            </button>
-            <button id="nav-tabungan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.007 60.007 0 0115.795-3.007 60.007 60.007 0 014.132 2.503m-16.5-6v-2.25A2.25 2.25 0 016.924 9.497l1.056-.492a2.25 2.25 0 001.274-2.247m-1.274 2.247L5.541 11.25m3.654 1.253a.75.75 0 00.725-.494l.519-1.038a.75.75 0 00-.725-1.066l-2.022.494a.75.75 0 00-.519 1.066l.519 1.038a.75.75 0 00.725.494zM5.541 11.25H2.25M2.25 18.75V11.25m4.291-7.003L16.208 2.25" />
-                </svg>
-                <span class="text-xs mt-1">Tabungan</span>
-            </button>
-            <button id="nav-habit" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
-                </svg>
-                <span class="text-xs mt-1">Habit</span>
-            </button>
-            <button id="nav-laporan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75M6 21h12a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25v12a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-                <span class="text-xs mt-1">Laporan</span>
-            </button>
-            <button id="nav-galeri" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-                <span class="text-xs mt-1">Galeri</span>
-            </button>
-            <button id="nav-settings" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5a.75.75 0 001.5 0V3a.75.75 0 00-1.5 0zM12 21v-1.5a.75.75 0 001.5 0V21a.75.75 0 00-1.5 0zM3 12h1.5a.75.75 0 000-1.5H3a.75.75 0 000 1.5zM21 12h-1.5a.75.75 0 000 1.5H21a.75.75 0 000-1.5zM6 15.75a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM18 15.75a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM6 8.25a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM18 8.25a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75z" />
-                </svg>
-                <span class="text-xs mt-1">Setting</span>
-            </button>
-        </nav>
     </div>
+
+    <!-- Navigation Bar -->
+    <nav id="navbar" class="hidden">
+        <button id="nav-dashboard" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125h9.75a1.125 1.125 0 001.125-1.125V9.75M8.25 21h6.5M12 3v9" />
+            </svg>
+            <span class="text-xs mt-1">Hub</span>
+        </button>
+        <button id="nav-keuangan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l-.879-.879m0 0a3 3 0 114.243 4.243m-4.243 0L10.5 16.5m-.257-4.243L11.5 12m0 0l-2.618 2.618m2.618-2.618a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879m0 0a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879-.879m-.879-.879a3 3 0 11-4.243-4.243M11.5 12L9.282 9.782m2.618 2.618l.879.879" />
+            </svg>
+            <span class="text-xs mt-1">Keuangan</span>
+        </button>
+        <button id="nav-tabungan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.007 60.007 0 0115.795-3.007 60.007 60.007 0 014.132 2.503m-16.5-6v-2.25A2.25 2.25 0 016.924 9.497l1.056-.492a2.25 2.25 0 001.274-2.247m-1.274 2.247L5.541 11.25m3.654 1.253a.75.75 0 00.725-.494l.519-1.038a.75.75 0 00-.725-1.066l-2.022.494a.75.75 0 00-.519 1.066l.519 1.038a.75.75 0 00.725.494zM5.541 11.25H2.25M2.25 18.75V11.25m4.291-7.003L16.208 2.25" />
+            </svg>
+            <span class="text-xs mt-1">Tabungan</span>
+        </button>
+        <button id="nav-habit" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
+            </svg>
+            <span class="text-xs mt-1">Habit</span>
+        </button>
+        <button id="nav-laporan" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75M6 21h12a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25v12a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+            <span class="text-xs mt-1">Laporan</span>
+        </button>
+        <button id="nav-galeri" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
+            <span class="text-xs mt-1">Galeri</span>
+        </button>
+        <button id="nav-settings" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5a.75.75 0 001.5 0V3a.75.75 0 00-1.5 0zM12 21v-1.5a.75.75 0 001.5 0V21a.75.75 0 00-1.5 0zM3 12h1.5a.75.75 0 000-1.5H3a.75.75 0 000 1.5zM21 12h-1.5a.75.75 0 000 1.5H21a.75.75 0 000-1.5zM6 15.75a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM18 15.75a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM6 8.25a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75zM18 8.25a.75.75 0 00.75-.75.75.75 0 00-.75-.75-.75-.75 0 00-.75.75.75.75 0 00.75.75z" />
+            </svg>
+            <span class="text-xs mt-1">Setting</span>
+        </button>
+    </nav>
 
     <!-- Modals -->
     <div id="modal-container" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
@@ -217,9 +208,9 @@
 
     <script type="module">
         // Import Firebase SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -260,7 +251,6 @@
         
         
             // --- UI Element References ---
-            const appEl = document.getElementById('app');
             const loadingScreen = document.getElementById('loading-screen');
             const headerEl = document.getElementById('header');
             const userDisplayEl = document.getElementById('user-display');
@@ -553,7 +543,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 9.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 12.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 15.75a.75.75 0 100 1.5.75.75 0 000-1.5zM12 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 21a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM6.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 6a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 9a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 12a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 15a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 18a.75.75 0 100 1.5.75.75 0 000-1.5zM9.75 21a.75.75 0 100 1.5.75.75 0 000-1.5z" />
                                 </svg>
-                                <span>Habit Tracker</span>
+                                <span>Habit</span>
                             </button>
                             <button id="shortcut-laporan" class="bg-[#A4EBF3] text-gray-800 font-bold py-4 px-6 rounded-2xl shadow-md flex flex-col items-center transition-transform hover:scale-105">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2">
