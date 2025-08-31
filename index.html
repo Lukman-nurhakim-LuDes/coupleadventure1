@@ -185,15 +185,24 @@
 
     <script type="module">
         // Import Firebase SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1XmP5oSUlI5ct8NNVcM5FaWlW1gk3D8A",
+            authDomain: "couple-adventure.firebaseapp.com",
+            projectId: "couple-adventure",
+            storageBucket: "couple-adventure.firebasestorage.app",
+            messagingSenderId: "960626078857",
+            appId: "1:960626078857:web:debb5a3f90ccf00119c258"
+        };
+        
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        
+
         // Check if firebaseConfig is valid
         if (!firebaseConfig.apiKey) {
             console.error("Firebase config is missing. Please provide a valid config.");
@@ -359,17 +368,11 @@
             });
         
             // Sign in on load, using a robust method for the environment
-            if (initialAuthToken) {
-                signInWithCustomToken(auth, initialAuthToken).catch(error => {
-                    console.error("Custom token sign-in failed:", error);
-                    showModal('Error Otentikasi', 'Gagal terhubung dengan database menggunakan token khusus.');
-                });
-            } else {
-                signInAnonymously(auth).catch((error) => {
-                    console.error("Anonymous sign-in failed:", error);
-                    showModal('Error Otentikasi', 'Gagal terhubung dengan database. Pastikan otentikasi Anonim diaktifkan di konsol Firebase Anda.');
-                });
-            }
+            // Mengubah logika untuk selalu menggunakan signInAnonymously untuk menghindari error custom token
+            signInAnonymously(auth).catch((error) => {
+                console.error("Anonymous sign-in failed:", error);
+                showModal('Error Otentikasi', 'Gagal terhubung dengan database. Pastikan otentikasi Anonim diaktifkan di konsol Firebase Anda.');
+            });
         
             // --- Login & Register Page ---
             function renderLogin() {
