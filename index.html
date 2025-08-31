@@ -24,7 +24,13 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #F8F4F1;
+            /* Menggunakan gambar dari folder icons Anda untuk seluruh body */
+            background-image: url('./icons/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Opsi untuk membuat latar belakang tetap saat digulir */
+            background-color: #F8F4F1; /* Fallback color */
         }
 
         /* Custom scrollbar for tables */
@@ -46,16 +52,8 @@
         }
 
         /* Hero image with gentle animation */
-        .hero-bg {
-            /* Menggunakan gambar dari folder icons Anda */
-            background-image: url('./icons/background.png');
-            background-size: cover;
-            background-position: center;
-            animation: moveBg 20s infinite alternate ease-in-out;
-            border-radius: 1.5rem;
-        }
-
-        @keyframes moveBg {
+        /* Kelas ini dihapus karena latar belakang sekarang diatur di body */
+        /* @keyframes moveBg {
             from {
                 background-position: center 0%;
             }
@@ -63,7 +61,7 @@
             to {
                 background-position: center 100%;
             }
-        }
+        } */
 
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -368,7 +366,6 @@
             });
         
             // Sign in on load, using a robust method for the environment
-            // Mengubah logika untuk selalu menggunakan signInAnonymously untuk menghindari error custom token
             signInAnonymously(auth).catch((error) => {
                 console.error("Anonymous sign-in failed:", error);
                 showModal('Error Otentikasi', 'Gagal terhubung dengan database. Pastikan otentikasi Anonim diaktifkan di konsol Firebase Anda.');
@@ -545,23 +542,10 @@
                 document.getElementById('shortcut-laporan').addEventListener('click', () => renderPage('laporan'));
                 document.getElementById('shortcut-galeri').addEventListener('click', () => renderPage('galeri'));
                 
+                // Menghapus elemen hero-image-container karena latar belakang kini di body
                 const heroImageContainer = document.getElementById('hero-image-container');
                 if (heroImageContainer) {
-                    const img = new Image();
-                    img.onload = () => {
-                        heroImageContainer.classList.remove('hidden');
-                    };
-                    img.onerror = () => {
-                        heroImageContainer.classList.add('hidden');
-                    };
-                    // Set the src from the CSS to trigger the load/error events
-                    const backgroundImage = window.getComputedStyle(heroImageContainer).backgroundImage;
-                    if (backgroundImage && backgroundImage !== 'none') {
-                        const urlMatch = backgroundImage.match(/url\(['"]?([^'"]+)['"]?\)/);
-                        if (urlMatch && urlMatch[1]) {
-                            img.src = urlMatch[1];
-                        }
-                    }
+                    heroImageContainer.remove();
                 }
                 
                 // Render charts on dashboard
