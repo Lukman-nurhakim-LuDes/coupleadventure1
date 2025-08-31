@@ -32,7 +32,11 @@
             background-attachment: fixed; /* Opsi untuk membuat latar belakang tetap saat digulir */
             background-color: #F8F4F1; /* Fallback color */
         }
-
+        /* Mengatur latar belakang elemen utama menjadi transparan dan menambahkan efek blur untuk keterbacaan */
+        #app {
+            background-color: rgba(255, 255, 255, 0.7); /* Latar belakang putih semi-transparan */
+            backdrop-filter: blur(8px); /* Efek blur pada konten di belakangnya */
+        }
         /* Custom scrollbar for tables */
         ::-webkit-scrollbar {
             width: 8px;
@@ -96,7 +100,7 @@
 <body class="bg-[#F8F4F1] min-h-screen flex flex-col items-center p-4">
 
     <!-- Main Application Container -->
-    <div id="app" class="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[95vh] relative">
+    <div id="app" class="w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[95vh] relative">
 
         <!-- Splash Screen / Loader -->
         <div id="loading-screen" class="absolute inset-0 bg-white flex flex-col items-center justify-center z-50 transition-opacity duration-500">
