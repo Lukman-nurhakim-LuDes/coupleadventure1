@@ -44,6 +44,7 @@
             display: flex;
             flex-direction: column;
             min-height: calc(100vh - 2rem);
+            overflow-y: auto;
         }
 
         #header {
@@ -82,9 +83,8 @@
         #content {
             flex-grow: 1;
             padding: 1rem;
-            margin-top: 64px; /* Tinggi header */
-            margin-bottom: 64px; /* Tinggi navbar */
-            overflow-y: auto;
+            margin-top: 64px;
+            margin-bottom: 64px;
         }
 
         ::-webkit-scrollbar {
@@ -147,6 +147,18 @@
         </main>
     </div>
 
+    <!-- Modals -->
+    <div id="modal-container" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 id="modal-title" class="text-xl font-bold mb-4"></h2>
+            <p id="modal-message" class="mb-4"></p>
+            <div class="flex justify-end space-x-2">
+                <button id="modal-cancel" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">Batal</button>
+                <button id="modal-confirm" class="bg-[#B2B5EE] text-white px-4 py-2 rounded-lg hover:bg-[#979ADF] transition-colors">OK</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Navigation Bar -->
     <nav id="navbar" class="hidden">
         <button id="nav-dashboard" class="flex-1 flex flex-col items-center text-white opacity-70 transition-opacity duration-200 hover:opacity-100 focus:outline-none">
@@ -248,6 +260,7 @@
             let savings = [];
             let financeChart = null;
             let donutChart = null;
+            let currentReportDate = new Date();
         
         
             // --- UI Element References ---
@@ -670,6 +683,19 @@
                 contentEl.innerHTML = `
                     <div class="space-y-6">
                         <h2 class="text-2xl font-bold text-center text-gray-800">Keuangan Couple</h2>
+                        <div class="flex items-center justify-between bg-gray-100 p-2 rounded-full shadow-inner">
+                            <button id="prev-month-finance" class="p-2 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <span id="current-month-finance" class="font-bold text-lg text-gray-700"></span>
+                            <button id="next-month-finance" class="p-2 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
         
                         <!-- Dashboard Summary Cards -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
@@ -738,6 +764,13 @@
                 `;
                 // Add event listeners and render initial data
                 document.getElementById('finance-form').addEventListener('submit', handleAddFinance);
+                document.getElementById('prev-month-finance').addEventListener('click', () => changeFinanceMonth(-1));
+                document.getElementById('next-month-finance').addEventListener('click', () => changeFinanceMonth(1));
+                updateFinanceUI();
+            }
+            
+            function changeFinanceMonth(offset) {
+                currentReportDate.setMonth(currentReportDate.getMonth() + offset);
                 updateFinanceUI();
             }
         
@@ -745,12 +778,24 @@
              * Updates the finance UI with data from state.
              */
             function updateFinanceUI() {
-                // Calculate totals
-                const totalIncome = finances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
-                const totalExpense = finances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+                const startOfMonth = new Date(currentReportDate.getFullYear(), currentReportDate.getMonth(), 1);
+                const endOfMonth = new Date(currentReportDate.getFullYear(), currentReportDate.getMonth() + 1, 0, 23, 59, 59);
+
+                const monthlyFinances = finances.filter(f => {
+                    const fDate = new Date(f.date);
+                    return fDate >= startOfMonth && fDate <= endOfMonth;
+                });
+                
+                const totalIncome = monthlyFinances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+                const totalExpense = monthlyFinances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
                 const finalBalance = totalIncome - totalExpense;
         
                 // Update summary cards
+                const currentMonthEl = document.getElementById('current-month-finance');
+                if(currentMonthEl) {
+                    currentMonthEl.textContent = `${currentReportDate.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}`;
+                }
+
                 const saldoAkhirEl = document.getElementById('saldo-akhir');
                 const totalPemasukanEl = document.getElementById('total-pemasukan');
                 const totalPengeluaranEl = document.getElementById('total-pengeluaran');
@@ -762,7 +807,7 @@
                 // Render table
                 const tableBody = document.getElementById('finance-table-body');
                 if (tableBody) {
-                    tableBody.innerHTML = finances.map(item => `
+                    tableBody.innerHTML = monthlyFinances.map(item => `
                         <tr class="border-b border-gray-100 last:border-0 text-sm">
                             <td class="py-2 px-1">${item.date}</td>
                             <td class="py-2 px-1">
@@ -1137,6 +1182,19 @@
                 contentEl.innerHTML = `
                     <div class="space-y-6">
                         <h2 class="text-2xl font-bold text-center text-gray-800">Laporan Bulanan</h2>
+                        <div class="flex items-center justify-between bg-gray-100 p-2 rounded-full shadow-inner">
+                            <button id="prev-month-report" class="p-2 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <span id="current-month-report" class="font-bold text-lg text-gray-700"></span>
+                            <button id="next-month-report" class="p-2 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                         <div class="bg-[#F8F4F1] p-4 rounded-xl shadow-md">
                             <h3 class="font-bold text-lg mb-2 text-center">Ringkasan Keuangan Bulan Ini</h3>
                             <div class="grid grid-cols-2 gap-4">
@@ -1154,6 +1212,26 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="bg-white p-4 rounded-xl shadow-md">
+                            <h3 class="font-bold text-lg mb-2 text-center">Detail Transaksi Bulan Ini</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left table-auto">
+                                    <thead class="border-b-2 border-[#F6C6EA]">
+                                        <tr>
+                                            <th class="py-2 px-1">Tgl</th>
+                                            <th class="py-2 px-1">Kategori</th>
+                                            <th class="py-2 px-1">Jumlah</th>
+                                            <th class="py-2 px-1">Catatan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="monthly-finance-table-body">
+                                        <!-- Monthly transaction rows will be rendered here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <div class="bg-[#F8F4F1] p-4 rounded-xl shadow-md">
                             <h3 class="font-bold text-lg mb-2 text-center">Laporan Habit Bulan Ini</h3>
                             <ul id="habit-report-list" class="space-y-2">
@@ -1170,18 +1248,24 @@
                         </div>
                     </div>
                 `;
+                document.getElementById('prev-month-report').addEventListener('click', () => changeReportMonth(-1));
+                document.getElementById('next-month-report').addEventListener('click', () => changeReportMonth(1));
                 updateLaporanUI();
                 document.getElementById('export-pdf-btn').addEventListener('click', exportPdf);
             }
+
+            function changeReportMonth(offset) {
+                currentReportDate.setMonth(currentReportDate.getMonth() + offset);
+                updateLaporanUI();
+            }
         
             function updateLaporanUI() {
-                const now = new Date();
-                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-                const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).getTime();
+                const startOfMonth = new Date(currentReportDate.getFullYear(), currentReportDate.getMonth(), 1);
+                const endOfMonth = new Date(currentReportDate.getFullYear(), currentReportDate.getMonth() + 1, 0, 23, 59, 59);
         
                 // Financial Report Data
                 const monthlyFinances = finances.filter(f => {
-                    const fDate = new Date(f.date).getTime();
+                    const fDate = new Date(f.date);
                     return fDate >= startOfMonth && fDate <= endOfMonth;
                 });
         
@@ -1189,9 +1273,31 @@
                 const totalExpense = monthlyFinances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
                 const finalBalance = totalIncome - totalExpense;
         
+                const currentMonthReportEl = document.getElementById('current-month-report');
+                if(currentMonthReportEl) {
+                    currentMonthReportEl.textContent = `${currentReportDate.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}`;
+                }
+
                 document.getElementById('report-income').textContent = `Rp ${totalIncome.toLocaleString('id-ID')}`;
                 document.getElementById('report-expense').textContent = `Rp ${totalExpense.toLocaleString('id-ID')}`;
                 document.getElementById('report-balance').textContent = `Rp ${finalBalance.toLocaleString('id-ID')}`;
+        
+                // Render detailed monthly transaction table
+                const monthlyFinanceTableBody = document.getElementById('monthly-finance-table-body');
+                if (monthlyFinanceTableBody) {
+                     monthlyFinanceTableBody.innerHTML = monthlyFinances.map(item => `
+                        <tr class="border-b border-gray-100 last:border-0 text-sm">
+                            <td class="py-2 px-1">${item.date}</td>
+                            <td class="py-2 px-1">
+                                <span class="px-2 py-1 rounded-full text-xs font-bold ${item.category === 'pemasukan' ? 'bg-[#D2F9D2] text-[#4CAF50]' : 'bg-[#F9D2D2] text-[#F44336]'}">
+                                    ${item.category === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran'}
+                                </span>
+                            </td>
+                            <td class="py-2 px-1">${item.amount.toLocaleString('id-ID')}</td>
+                            <td class="py-2 px-1">${item.notes || '-'}</td>
+                        </tr>
+                    `).join('');
+                }
         
                 // Habit Report Data
                 const habitReportList = document.getElementById('habit-report-list');
@@ -1203,7 +1309,7 @@
                         habits.forEach(habit => {
                             const monthlyDates = habit.dates.filter(d => {
                                 const dDate = new Date(d.date);
-                                return dDate.getMonth() === now.getMonth() && dDate.getFullYear() === now.getFullYear();
+                                return dDate.getMonth() === currentReportDate.getMonth() && dDate.getFullYear() === currentReportDate.getFullYear();
                             });
                             const totalDays = monthlyDates.length;
                             const checkedDays = monthlyDates.filter(d => d.checked).length;
@@ -1224,20 +1330,27 @@
             async function exportPdf() {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                const now = new Date();
-                const month = now.toLocaleString('id-ID', { month: 'long' });
-                const year = now.getFullYear();
+                const month = currentReportDate.toLocaleString('id-ID', { month: 'long' });
+                const year = currentReportDate.getFullYear();
         
                 // Financial Report Data
-                const totalIncome = finances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
-                const totalExpense = finances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
+                const startOfMonth = new Date(currentReportDate.getFullYear(), currentReportDate.getMonth(), 1);
+                const endOfMonth = new Date(currentReportDate.getFullYear(), currentReportDate.getMonth() + 1, 0, 23, 59, 59);
+
+                const monthlyFinances = finances.filter(f => {
+                    const fDate = new Date(f.date);
+                    return fDate >= startOfMonth && fDate <= endOfMonth;
+                });
+
+                const totalIncome = monthlyFinances.filter(f => f.category === 'pemasukan').reduce((sum, f) => sum + f.amount, 0);
+                const totalExpense = monthlyFinances.filter(f => f.category === 'pengeluaran').reduce((sum, f) => sum + f.amount, 0);
                 const finalBalance = totalIncome - totalExpense;
         
                 // Habit Report Data
                 const habitData = habits.map(habit => {
                     const monthlyDates = habit.dates.filter(d => {
                         const dDate = new Date(d.date);
-                        return dDate.getMonth() === now.getMonth() && dDate.getFullYear() === now.getFullYear();
+                        return dDate.getMonth() === currentReportDate.getMonth() && dDate.getFullYear() === currentReportDate.getFullYear();
                     });
                     const totalDays = monthlyDates.length;
                     const checkedDays = monthlyDates.filter(d => d.checked).length;
@@ -1280,7 +1393,7 @@
                 doc.text(`Detail Transaksi Keuangan`, 20, yPos);
                 yPos += 5;
         
-                const financeTableRows = finances.map(f => [
+                const financeTableRows = monthlyFinances.map(f => [
                     f.date,
                     f.category === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran',
                     `Rp ${f.amount.toLocaleString('id-ID')}`,
@@ -1560,10 +1673,16 @@
         
             // --- Navigation Event Listeners ---
             navButtons.hub.addEventListener('click', () => renderPage('hub'));
-            navButtons.keuangan.addEventListener('click', () => renderPage('keuangan'));
+            navButtons.keuangan.addEventListener('click', () => {
+                currentReportDate = new Date(); // Set to current month on navigation
+                renderPage('keuangan');
+            });
             navButtons.tabungan.addEventListener('click', () => renderPage('tabungan'));
             navButtons.habit.addEventListener('click', () => renderPage('habit'));
-            navButtons.laporan.addEventListener('click', () => renderPage('laporan'));
+            navButtons.laporan.addEventListener('click', () => {
+                currentReportDate = new Date(); // Set to current month on navigation
+                renderPage('laporan');
+            });
             navButtons.galeri.addEventListener('click', () => renderPage('galeri'));
             navButtons.settings.addEventListener('click', () => renderPage('settings'));
         }
