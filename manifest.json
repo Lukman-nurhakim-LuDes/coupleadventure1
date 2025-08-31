@@ -1,21 +1,21 @@
 {
-  "name": "Petualangan Couple",
-  "short_name": "Couple App",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#ffc1e3",
-  "theme_color": "#ff87b3",
-  "description": "Aplikasi keuangan dan habit tracker untuk couple.",
-  "icons": [
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+"name": "Petualangan Couple",
+"short_name": "Couple's Hub",
+"start_url": "./index.html",
+"display": "standalone",
+"background_color": "#F8F4F1",
+"theme_color": "#B2B5EE",
+"description": "Aplikasi untuk pasangan mengelola keuangan, kebiasaan, dan kenangan bersama.",
+"icons": [
+{
+"src": "./icons/icon-192.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "./icons/icon-512.png",
+"sizes": "512x512",
+"type": "image/png"
+}
+]
 }
